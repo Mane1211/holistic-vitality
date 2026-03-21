@@ -877,7 +877,7 @@ document.getElementById('install-btn')?.addEventListener('click', () => {
 async function registerSW() {
   if (!('serviceWorker' in navigator)) return;
   try {
-    const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    const reg = await navigator.serviceWorker.register('/holistic-vitality/sw.js', { scope: '/holistic-vitality/' });
     console.log('SW registered:', reg.scope);
 
     // Register periodic sync if supported (Android Chrome)
