@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Holistic Vitality</title>
+<link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#006b5f"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Vitality"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root {
+  --teal:#006b5f;--teal-l:#73f2dd;--teal-m:#009688;--teal-d:#004d43;
+  --org:#9c4600;--org-l:#ffdbc9;--cream:#f7faf8;--surface:#f0f5f2;
+  --card:#ffffff;--text:#1a2624;--muted:#64837e;--border:#d4e0dc;
+}
+*{box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);margin:0;}
+h1,h2,h3,h4{font-family:'Manrope',sans-serif;}
+.ms{font-family:'Material Symbols Outlined';font-size:22px;font-weight:400;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;line-height:1;display:inline-block;}
+.ms-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;}
+
+/* Layout */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:66px;background:rgba(247,250,248,.93);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:12px;}
+.brand{font-family:'Manrope',sans-serif;font-weight:800;font-size:19px;color:var(--teal);}
+.top-nav{display:flex;gap:4px;margin:0 auto;}
+.top-nav a{padding:7px 15px;border-radius:99px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;text-decoration:none;transition:all .2s;}
+.top-nav a.active,.top-nav a:hover{background:#e0f2ef;color:var(--teal);font-weight:600;}
+.top-right{display:flex;gap:8px;align-items:center;margin-left:auto;}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .2s;position:relative;}
+.icon-btn:hover{background:var(--surface);}
+.notif-dot{position:absolute;top:5px;right:5px;width:8px;height:8px;background:#ef4444;border-radius:50%;border:2px solid var(--cream);}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-l));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:12px;cursor:pointer;}
+
+.shell{display:flex;min-height:100vh;padding-top:66px;}
+.sidebar{width:210px;flex-shrink:0;}
+.sidebar-inner{position:sticky;top:66px;height:calc(100vh - 66px);display:flex;flex-direction:column;padding:20px 14px;border-right:1px solid var(--border);}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;cursor:pointer;color:#556d69;font-weight:500;font-size:14px;transition:all .2s;margin-bottom:3px;text-decoration:none;}
+.nav-item:hover{background:#e8f5f2;color:var(--teal);}
+.nav-item.active{background:#e0f2ef;color:var(--teal);font-weight:700;}
+.sidebar-cta{margin-top:auto;background:var(--teal);color:white;padding:13px 18px;border-radius:14px;font-weight:700;font-size:13px;border:none;cursor:pointer;width:100%;transition:transform .15s,box-shadow .15s;font-family:inherit;}
+.sidebar-cta:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(0,107,95,.35);}
+
+.main{flex:1;padding:26px 28px 60px;max-width:1080px;}
+.page{display:none;}
+.page.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* Cards */
+.card{background:white;border-radius:22px;}
+.glass{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.7);border-radius:22px;}
+
+/* Hero */
+.hero{border-radius:26px;overflow:hidden;position:relative;min-height:340px;display:flex;align-items:flex-end;padding:32px;margin-bottom:24px;}
+.hero-over{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,rgba(0,0,0,.1) 65%,transparent 100%);}
+
+/* Macro */
+.macro{background:white;border-radius:18px;padding:18px;text-align:center;cursor:pointer;transition:transform .2s;}
+.macro:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.07);}
+.macro-v{font-family:'Manrope',sans-serif;font-size:26px;font-weight:900;line-height:1;}
+.macro-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px;}
+.pb{height:5px;background:#f0f0f0;border-radius:99px;overflow:hidden;margin-top:9px;}
+.pbf{height:100%;border-radius:99px;}
+
+/* Steps ring */
+.step-track{stroke:#e8f2f0;}
+.step-fill{stroke:var(--teal);stroke-linecap:round;stroke-dasharray:175.9;stroke-dashoffset:80;animation:ringIn 1.4s ease-out;}
+@keyframes ringIn{from{stroke-dashoffset:175.9;}to{stroke-dashoffset:80;}}
+
+/* Fitness hero */
+.fit-hero{border-radius:26px;min-height:240px;position:relative;overflow:hidden;padding:32px;margin-bottom:24px;display:flex;flex-direction:column;justify-content:flex-end;}
+.fit-bg{position:absolute;inset:0;background:linear-gradient(135deg,#1a3d38,#2d6b5a 40%,#4a9e7e);}
+.fit-over{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.55) 0%,transparent 70%);}
+.fit-fig{position:absolute;right:50px;bottom:0;opacity:.3;font-size:110px;line-height:1;}
+
+/* Energy ring */
+.ering-fill{stroke:var(--teal);stroke-linecap:round;stroke-dasharray:389.6;stroke-dashoffset:100;animation:eringIn 1.5s ease-out;}
+@keyframes eringIn{from{stroke-dashoffset:389.6;}to{stroke-dashoffset:100;}}
+
+/* Bar chart */
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.bar{width:100%;border-radius:7px 7px 0 0;}
+.bar-lbl{font-size:10px;font-weight:600;color:var(--muted);}
+
+/* Meditation */
+.med-hero{border-radius:26px;overflow:hidden;min-height:480px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;margin-bottom:24px;text-align:center;}
+.med-bg{position:absolute;inset:0;background:linear-gradient(160deg,#c8dfd4,#e8f5e0 30%,#daf0e8 60%,#b8d4c8);}
+.med-trees{position:absolute;inset:0;opacity:.45;background:radial-gradient(ellipse at 10% 55%,rgba(40,80,50,.7) 0%,transparent 45%),radial-gradient(ellipse at 90% 55%,rgba(40,80,50,.7) 0%,transparent 45%),radial-gradient(ellipse at 50% 95%,rgba(60,100,70,.6) 0%,transparent 35%),linear-gradient(to bottom,rgba(210,170,70,.35) 0%,transparent 35%);}
+.med-haze{position:absolute;inset:0;background:rgba(240,250,245,.25);backdrop-filter:blur(1px);}
+.med-content{position:relative;z-index:2;width:100%;max-width:560px;}
+.sound-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 18px;border-radius:16px;border:2px solid transparent;background:rgba(255,255,255,.6);cursor:pointer;transition:all .2s;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-family:inherit;}
+.sound-btn.active{background:var(--teal);color:white;box-shadow:0 5px 16px rgba(0,107,95,.3);}
+.sound-btn:not(.active):hover{background:white;border-color:var(--teal-l);}
+
+/* Voice */
+@keyframes vpulse{0%{width:80px;height:80px;opacity:.6;}100%{width:160px;height:160px;opacity:0;}}
+.vp-ring{position:absolute;border-radius:50%;border:3px solid rgba(0,107,95,.2);animation:vpulse 1.5s ease-out infinite;}
+.mic-btn{width:80px;height:80px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;z-index:2;box-shadow:0 8px 28px rgba(0,107,95,.4);transition:transform .15s;}
+.mic-btn:hover{transform:scale(1.05);}
+.food-card{background:white;border-radius:16px;padding:13px 15px;display:flex;align-items:center;gap:12px;border:2px solid transparent;transition:all .2s;cursor:pointer;}
+.food-card.sel{border-color:var(--teal-l);background:#f0fdf9;}
+.food-emoji{width:60px;height:60px;border-radius:12px;background:linear-gradient(135deg,#e0f2ef,#b2dfdb);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.tag{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;}
+.tag-g{background:#e0f7f4;color:#006b5f;}
+.tag-o{background:#fff3e0;color:#e65100;}
+@keyframes wave{0%,100%{height:5px;}50%{height:18px;}}
+.wv span{width:3px;background:var(--teal);border-radius:99px;animation:wave .9s ease-in-out infinite;display:inline-block;}
+.wv span:nth-child(2){animation-delay:.12s;}
+.wv span:nth-child(3){animation-delay:.24s;}
+.wv span:nth-child(4){animation-delay:.36s;}
+
+/* Meal row */
+.meal-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:white;transition:transform .15s;cursor:pointer;}
+.meal-row:hover{transform:translateX(4px);}
+
+/* Toast */
+#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(10px);background:#1a2624;color:white;padding:11px 22px;border-radius:99px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .3s;z-index:9999;white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Mobile */
+.mob-nav{display:none;}
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{padding:14px 14px 80px;}
+  .top-nav{display:none;}
+  .mob-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:7px 0 20px;justify-content:space-around;}
+  .mn-item{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;padding:5px 12px;border-radius:10px;}
+  .mn-item.active{color:var(--teal);background:#e0f2ef;}
+  .mn-fab{background:var(--teal);border-radius:50%;width:50px;height:50px;margin-top:-24px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(0,107,95,.4);}
+  .hero{min-height:260px;padding:22px;}
+  .fit-hero{min-height:190px;}
+  .med-hero{min-height:360px;}
+}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <span class="brand">Holistic Vitality</span>
+  <nav class="top-nav">
+    <a class="active" data-page="dashboard">Dashboard</a>
+    <a data-page="fitness">Activity</a>
+    <a data-page="voice">Voice Log</a>
+    <a data-page="meditation">Zen</a>
+    <a data-page="nutrition">Eat</a>
+  </nav>
+  <div class="top-right">
+    <button class="icon-btn" onclick="showToast('🔔 Meditation 8:00 AM · Workout 4:30 PM')">
+      <span class="ms ms-fill">notifications</span>
+      <span class="notif-dot"></span>
+    </button>
+    <button class="icon-btn" onclick="toggleDark()" id="darkBtn">
+      <span class="ms" id="darkIcon">dark_mode</span>
+    </button>
+    <div class="avatar">SIA</div>
+  </div>
+</header>
+
+<div class="shell">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-inner">
+    <div style="margin-bottom:20px;">
+      <p style="font-weight:700;font-size:13px;color:var(--teal);margin:0 0 2px;">Welcome back</p>
+      <p style="font-size:12px;color:var(--muted);margin:0;">Your wellness journey</p>
+    </div>
+    <a class="nav-item active" data-page="dashboard"><span class="ms">dashboard</span>Dashboard</a>
+    <a class="nav-item" data-page="fitness"><span class="ms">fitness_center</span>Fitness</a>
+    <a class="nav-item" data-page="meditation"><span class="ms">self_improvement</span>Meditation</a>
+    <a class="nav-item" data-page="nutrition"><span class="ms">restaurant</span>Nutrition</a>
+    <button class="sidebar-cta" onclick="switchPage('voice')">🎤 Start Food Tracking</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ═══════════ DASHBOARD ═══════════ -->
+<div id="page-dashboard" class="page active">
+  <!-- Hero -->
+  <div class="hero" style="background:linear-gradient(160deg,#2c4a35,#1a5c3a 30%,#0d3d2a 65%,#071f15);">
+    <div style="position:absolute;top:-50px;left:50%;transform:translateX(-50%);width:280px;height:280px;background:radial-gradient(circle,rgba(255,195,70,.4) 0%,transparent 70%);border-radius:50%;"></div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:80px;background:#071f15;clip-path:ellipse(55% 100% at 50% 100%);"></div>
+    <div class="hero-over"></div>
+    <div style="position:relative;z-index:2;width:100%;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:18px;">
+      <div>
+        <span id="time-badge" style="display:inline-block;background:rgba(115,242,221,.2);color:#a7f3d0;padding:5px 15px;border-radius:99px;font-size:12px;font-weight:700;margin-bottom:14px;backdrop-filter:blur(8px);">8:00 AM · Morning Glow</span>
+        <h2 style="font-size:clamp(32px,5vw,60px);font-weight:900;color:white;line-height:1.06;margin:0 0 10px;">Good Morning,<br/>Sia</h2>
+        <p style="color:rgba(255,255,255,.75);font-size:15px;max-width:320px;line-height:1.6;margin:0;">The air is crisp and the day is yours. Start with presence.</p>
+      </div>
+      <div class="glass" style="padding:22px;max-width:300px;width:100%;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+          <div style="background:rgba(115,242,221,.25);padding:9px;border-radius:12px;"><span class="ms ms-fill" style="color:#73f2dd;">self_improvement</span></div>
+          <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);">Live Session</span>
+        </div>
+        <h3 style="font-size:18px;font-weight:800;color:white;margin:0 0 3px;">Morning Mindfulness</h3>
+        <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:16px;">8:00 AM — 8:30 AM</p>
+        <button onclick="switchPage('meditation');showToast('🧘 Session joined!')" style="width:100%;background:linear-gradient(135deg,var(--teal),var(--teal-m));color:white;border:none;padding:13px;border-radius:13px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;">
+          Join Meditation <span class="ms" style="font-size:16px;">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bento -->
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:18px;">
+    <!-- Nutrition panel -->
+    <div style="background:var(--surface);border-radius:26px;padding:26px;">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:22px;">
+        <div>
+          <h3 style="font-size:22px;font-weight:800;margin:0 0 3px;">Nutrition Log</h3>
+          <p style="color:var(--muted);font-size:13px;margin:0;">Today's fuel summary</p>
+        </div>
+        <button onclick="switchPage('voice')" style="display:flex;align-items:center;gap:9px;background:white;border:none;padding:11px 18px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);cursor:pointer;font-weight:700;color:var(--teal);font-size:13px;font-family:inherit;">
+          <div style="position:relative;width:18px;height:18px;display:flex;align-items:center;justify-content:center;">
+            <div style="position:absolute;inset:0;background:rgba(0,107,95,.2);border-radius:50%;animation:vpulse 1.4s ease-out infinite;"></div>
+            <span class="ms ms-fill" style="font-size:16px;position:relative;">mic</span>
+          </div>
+          Voice Log Food
+        </button>
+      </div>
+      <!-- Macros -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;">
+        <div class="macro"><p class="macro-l">Calories</p><p class="macro-v" style="color:var(--teal);" id="dash-cal">1,240</p><p style="font-size:10px;color:#aaa;margin:3px 0 0;">of 2,100 kcal</p><div class="pb"><div class="pbf" style="width:59%;background:var(--teal);"></div></div></div>
+        <div class="macro"><p class="macro-l">Protein</p><p class="macro-v" style="color:var(--org);">82g</p><p style="font-size:10px;color:#aaa;margin:3px 0 0;">of 120g</p><div class="pb"><div class="pbf" style="width:68%;background:var(--org);"></div></div></div>
+        <div class="macro"><p class="macro-l">Carbs</p><p class="macro-v" style="color:#6834eb;">145g</p><p style="font-size:10px;color:#aaa;margin:3px 0 0;">of 220g</p><div class="pb"><div class="pbf" style="width:66%;background:#6834eb;"></div></div></div>
+        <div class="macro"><p class="macro-l">Fats</p><p class="macro-v" style="color:#ac3434;">42g</p><p style="font-size:10px;color:#aaa;margin:3px 0 0;">of 65g</p><div class="pb"><div class="pbf" style="width:65%;background:#ac3434;"></div></div></div>
+      </div>
+      <!-- Recent meals -->
+      <div style="background:white;border-radius:18px;padding:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <p style="font-weight:700;font-size:13px;margin:0;">Recent Meals</p>
+          <a onclick="switchPage('nutrition')" style="font-size:12px;color:var(--teal);font-weight:600;cursor:pointer;">View all →</a>
+        </div>
+        <div id="dash-meals" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <!-- HIIT card -->
+      <div style="background:var(--org-l);border-radius:26px;padding:26px;position:relative;overflow:hidden;">
+        <div style="position:absolute;right:-25px;top:-25px;width:140px;height:140px;background:rgba(156,70,0,.1);border-radius:50%;filter:blur(28px);"></div>
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:14px;">
+          <span class="ms ms-fill" style="color:var(--org);font-size:22px;">bolt</span>
+          <span style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--org);">Coming Up</span>
+        </div>
+        <h3 style="font-size:30px;font-weight:900;line-height:1.1;margin:0 0 5px;">Power<br/>HIIT</h3>
+        <p style="color:rgba(0,0,0,.5);font-size:14px;margin-bottom:18px;">4:30 PM — 5:30 PM</p>
+        <div style="display:flex;margin-bottom:14px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#4db6ac,#009688);border:3px solid var(--org-l);display:flex;align-items:center;justify-content:center;color:white;font-size:10px;font-weight:700;margin-right:-7px;">AL</div>
+          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#7c4dff,#6200ea);border:3px solid var(--org-l);display:flex;align-items:center;justify-content:center;color:white;font-size:10px;font-weight:700;margin-right:-7px;">MK</div>
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--org);border:3px solid var(--org-l);display:flex;align-items:center;justify-content:center;color:white;font-size:10px;font-weight:700;">+12</div>
+        </div>
+        <button onclick="showToast('⏰ Reminder set for 4:00 PM!')" style="width:100%;background:#873c00;color:white;border:none;padding:13px;border-radius:13px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">Set Reminder</button>
+      </div>
+      <!-- Steps -->
+      <div style="background:white;border-radius:20px;padding:20px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <p style="color:var(--muted);font-size:12px;margin:0 0 3px;">Daily Steps</p>
+          <p style="font-family:'Manrope',sans-serif;font-size:28px;font-weight:900;margin:0;line-height:1;" id="step-n">0</p>
+          <p style="font-size:11px;color:#aaa;margin:3px 0 0;">Goal: 10,000</p>
+        </div>
+        <svg viewBox="0 0 64 64" style="width:64px;height:64px;transform:rotate(-90deg);flex-shrink:0;">
+          <circle class="step-track" cx="32" cy="32" r="28" fill="transparent" stroke-width="6"/>
+          <circle class="step-fill" cx="32" cy="32" r="28" fill="transparent" stroke-width="6"/>
+        </svg>
+      </div>
+      <!-- Water -->
+      <div style="background:white;border-radius:20px;padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <p style="font-weight:700;font-size:13px;margin:0;">Water Intake</p>
+          <span class="ms ms-fill" style="color:#64b5f6;">water_drop</span>
+        </div>
+        <div id="water-cups" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px;"></div>
+        <p style="font-size:12px;color:var(--muted);margin:0;"><span id="water-n">3</span>/8 glasses today</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FITNESS ═══════════ -->
+<div id="page-fitness" class="page">
+  <!-- Hero -->
+  <div class="fit-hero">
+    <div class="fit-bg"></div>
+    <div class="fit-over"></div>
+    <div class="fit-fig">🏋️</div>
+    <div style="position:relative;z-index:2;">
+      <span style="background:rgba(115,242,221,.25);color:#73f2dd;padding:5px 13px;border-radius:99px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;">Active Session</span>
+      <h2 style="font-size:clamp(24px,4vw,44px);font-weight:900;color:white;margin:12px 0 7px;line-height:1.1;">Afternoon Workout:<br/>4:30 PM – 5:30 PM</h2>
+      <p style="color:rgba(255,255,255,.7);font-size:13px;max-width:380px;margin-bottom:22px;">Push your boundaries. Your personalised HIIT circuit is ready to maximise your metabolic fire.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button onclick="showToast('🔥 Workout started!')" style="background:white;color:var(--teal);border:none;padding:12px 22px;border-radius:13px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:7px;font-family:inherit;">
+          <span class="ms ms-fill" style="font-size:16px;">play_circle</span> Begin Workout
+        </button>
+        <button onclick="showToast('📅 Schedule viewed')" style="background:rgba(255,255,255,.15);color:white;border:2px solid rgba(255,255,255,.4);padding:12px 22px;border-radius:13px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;backdrop-filter:blur(8px);">View Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div style="display:grid;grid-template-columns:220px 1fr;gap:18px;margin-bottom:26px;">
+    <!-- Energy ring -->
+    <div style="background:white;border-radius:22px;padding:24px;display:flex;flex-direction:column;align-items:center;">
+      <p style="font-weight:700;font-size:13px;color:var(--muted);margin:0 0 14px;align-self:start;">Energy Burn</p>
+      <div style="position:relative;width:130px;height:130px;">
+        <svg viewBox="0 0 130 130" style="width:130px;height:130px;transform:rotate(-90deg);">
+          <circle cx="65" cy="65" r="58" fill="transparent" stroke="#f0f0f0" stroke-width="9"/>
+          <circle cx="65" cy="65" r="58" fill="transparent" stroke="var(--teal)" stroke-width="9" stroke-linecap="round" stroke-dasharray="364.4" stroke-dashoffset="95" class="ering-fill"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <p style="font-family:'Manrope',sans-serif;font-size:26px;font-weight:900;margin:0;line-height:1;">1,240</p>
+          <p style="font-size:11px;color:var(--muted);margin:0;">kcal</p>
+        </div>
+      </div>
+      <p style="font-size:12px;color:#2e7d32;font-weight:700;margin-top:12px;display:flex;align-items:center;gap:4px;"><span class="ms" style="font-size:14px;">trending_up</span>12% over target</p>
+    </div>
+
+    <!-- Weekly chart -->
+    <div style="background:white;border-radius:22px;padding:24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <p style="font-weight:700;font-size:15px;margin:0;">Weekly Activity</p>
+        <div style="display:flex;gap:5px;">
+          <button id="btn-steps" onclick="setWeekView('steps')" style="padding:5px 13px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;background:var(--teal);color:white;border:none;font-family:inherit;">Steps</button>
+          <button id="btn-miles" onclick="setWeekView('miles')" style="padding:5px 13px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;background:#f0f5f2;color:var(--muted);border:none;font-family:inherit;">Miles</button>
+        </div>
+      </div>
+      <div id="week-chart" style="display:flex;align-items:flex-end;gap:7px;height:110px;"></div>
+      <div id="week-labels" style="display:flex;gap:7px;margin-top:5px;"></div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px;">Daily Avg <strong style="font-family:'Manrope',sans-serif;font-size:18px;color:var(--text);">8,432</strong> steps</p>
+    </div>
+  </div>
+
+  <!-- Today's Focus -->
+  <h3 style="font-size:20px;font-weight:800;margin-bottom:14px;">Today's Focus</h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;">
+    <div style="background:white;border-radius:20px;overflow:hidden;">
+      <div style="height:160px;background:linear-gradient(160deg,#1a2624,#2d4a40);display:flex;align-items:center;justify-content:center;font-size:70px;">🏋️</div>
+      <div style="padding:18px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+          <h4 style="font-weight:800;margin:0;font-size:15px;">Strength Training</h4>
+          <span style="background:#e0f2ef;color:var(--teal);font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;">45 min</span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Lower body hypertrophy with progressive overload focus.</p>
+        <button onclick="showToast('📋 Exercise list loaded!')" style="width:100%;background:#f0f5f2;color:var(--teal);border:none;padding:11px;border-radius:11px;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;">Review Exercises</button>
+      </div>
+    </div>
+    <div style="background:white;border-radius:20px;overflow:hidden;">
+      <div style="height:160px;background:linear-gradient(160deg,#1a2434,#2d3a5a);display:flex;align-items:center;justify-content:center;font-size:70px;">🏃</div>
+      <div style="padding:18px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+          <h4 style="font-weight:800;margin:0;font-size:15px;">High Intensity Circuit</h4>
+          <span style="background:#fce4ec;color:#c62828;font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;">15 min</span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Tabata style finishers to skyrocket your post-workout burn.</p>
+        <button id="hiit-btn" onclick="startHiit()" style="width:100%;background:var(--teal);color:white;border:none;padding:11px;border-radius:11px;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;">Start Timer</button>
+      </div>
+    </div>
+    <div style="background:var(--teal);border-radius:20px;padding:22px;color:white;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:14px;right:14px;font-size:24px;">✨</div>
+      <p style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:10px;">Personal Best Insight</p>
+      <h4 style="font-size:18px;font-weight:800;margin-bottom:8px;">5-day streak! 🔥</h4>
+      <p style="font-size:12px;opacity:.8;margin-bottom:14px;">Complete today's session to unlock the "Consistent Peak" badge.</p>
+      <p style="font-size:11px;opacity:.6;">+128 community members active</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MEDITATION ═══════════ -->
+<div id="page-meditation" class="page">
+  <div class="med-hero">
+    <div class="med-bg"></div>
+    <div class="med-trees"></div>
+    <div class="med-haze"></div>
+    <div class="med-content">
+      <span id="med-badge" style="background:rgba(0,107,95,.2);color:var(--teal-d);padding:5px 14px;border-radius:99px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;border:1px solid rgba(0,107,95,.25);">MORNING VITALITY</span>
+      <h2 style="font-size:clamp(28px,5vw,52px);font-weight:900;color:var(--teal-d);margin:14px 0 7px;line-height:1.1;">Breathe into the light.</h2>
+      <p style="color:#4a7a6e;font-size:14px;margin-bottom:32px;max-width:360px;line-height:1.6;">Let the morning sun guide your focus. Today is a fresh canvas for your wellbeing.</p>
+
+      <!-- Timer -->
+      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:32px;">
+        <div style="position:relative;width:200px;height:200px;">
+          <svg viewBox="0 0 200 200" style="width:200px;height:200px;transform:rotate(-90deg);filter:drop-shadow(0 0 20px rgba(0,150,136,.2));">
+            <circle cx="100" cy="100" r="90" fill="rgba(255,255,255,.65)" stroke="#c8dfd4" stroke-width="7"/>
+            <circle id="med-arc" cx="100" cy="100" r="90" fill="transparent" stroke="var(--teal)" stroke-width="7" stroke-linecap="round" stroke-dasharray="565.5" stroke-dashoffset="565.5" style="transition:stroke-dashoffset 1s linear;"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <p id="med-display" style="font-family:'Manrope',sans-serif;font-size:48px;font-weight:900;color:var(--teal-d);margin:0;line-height:1;">12:00</p>
+            <p id="med-status" style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:3px 0 0;">REMAINING</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:18px;margin-top:22px;">
+          <button onclick="medSkip(-10)" style="width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.7);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);">
+            <span class="ms" style="font-size:20px;color:var(--muted);">replay_10</span>
+          </button>
+          <button id="med-btn" onclick="toggleMed()" style="width:68px;height:68px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(0,107,95,.4);transition:transform .15s;">
+            <span class="ms ms-fill" id="med-icon" style="color:white;font-size:30px;">play_arrow</span>
+          </button>
+          <button onclick="medSkip(10)" style="width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.7);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);">
+            <span class="ms" style="font-size:20px;color:var(--muted);">forward_10</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Ambient sounds -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <button class="sound-btn" onclick="pickSound(this,'🌧️','Forest Rain')"><span style="font-size:20px;">🌧️</span>FOREST RAIN</button>
+        <button class="sound-btn active" onclick="pickSound(this,'☀️','Soft Sunrise')"><span style="font-size:20px;">☀️</span>SOFT SUNRISE</button>
+        <button class="sound-btn" onclick="pickSound(this,'🌊','Ocean Tide')"><span style="font-size:20px;">🌊</span>OCEAN TIDE</button>
+        <button class="sound-btn" onclick="pickSound(this,'🎐','Zen Chimes')"><span style="font-size:20px;">🎐</span>ZEN CHIMES</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sessions + Streak -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div style="background:white;border-radius:22px;padding:22px;">
+      <h3 style="font-weight:800;font-size:16px;margin-bottom:14px;">Available Sessions</h3>
+      <div style="display:flex;flex-direction:column;gap:9px;" id="med-list">
+        <div class="med-item" style="display:flex;align-items:center;gap:11px;padding:12px;background:#f0fdf9;border-radius:14px;border:2px solid #a7f3d0;cursor:pointer;" onclick="pickSession(this,'Morning Mindfulness','MORNING VITALITY',720)">
+          <div style="background:#e0f2ef;padding:9px;border-radius:11px;"><span class="ms ms-fill" style="color:var(--teal);">self_improvement</span></div>
+          <div style="flex:1;"><p style="font-weight:700;margin:0 0 1px;font-size:14px;">Morning Mindfulness</p><p style="font-size:11px;color:var(--muted);margin:0;">12 min · Beginner</p></div>
+          <span class="ms ms-fill" style="color:var(--teal);">radio_button_checked</span>
+        </div>
+        <div class="med-item" style="display:flex;align-items:center;gap:11px;padding:12px;border-radius:14px;border:2px solid transparent;cursor:pointer;background:#f9f9f9;" onclick="pickSession(this,'Body Scan','DEEP RESTORE',900)">
+          <div style="background:#f3e8ff;padding:9px;border-radius:11px;"><span class="ms" style="color:#7c3aed;">spa</span></div>
+          <div style="flex:1;"><p style="font-weight:700;margin:0 0 1px;font-size:14px;">Body Scan</p><p style="font-size:11px;color:var(--muted);margin:0;">15 min · Intermediate</p></div>
+          <span class="ms" style="color:#ccc;">radio_button_unchecked</span>
+        </div>
+        <div class="med-item" style="display:flex;align-items:center;gap:11px;padding:12px;border-radius:14px;border:2px solid transparent;cursor:pointer;background:#f9f9f9;" onclick="pickSession(this,'Sleep Wind Down','EVENING ZEN',1200)">
+          <div style="background:#fff3e0;padding:9px;border-radius:11px;"><span class="ms" style="color:#e65100;">bedtime</span></div>
+          <div style="flex:1;"><p style="font-weight:700;margin:0 0 1px;font-size:14px;">Sleep Wind Down</p><p style="font-size:11px;color:var(--muted);margin:0;">20 min · All levels</p></div>
+          <span class="ms" style="color:#ccc;">radio_button_unchecked</span>
+        </div>
+      </div>
+    </div>
+    <div style="background:white;border-radius:22px;padding:22px;">
+      <h3 style="font-weight:800;font-size:16px;margin-bottom:14px;">Meditation Streak 🔥</h3>
+      <div id="streak" style="display:flex;gap:7px;"></div>
+      <div style="margin-top:18px;background:#f0fdf9;border-radius:14px;padding:14px;">
+        <p style="font-weight:700;color:var(--teal);font-size:13px;margin:0 0 3px;">🏆 4-day streak active!</p>
+        <p style="font-size:12px;color:var(--muted);margin:0;">Keep going — 3 more days for the "Zen Master" badge.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ VOICE LOG ═══════════ -->
+<div id="page-voice" class="page">
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start;">
+    <!-- Left -->
+    <div>
+      <div style="text-align:center;margin-bottom:10px;">
+        <span id="v-badge" style="background:#e0f2ef;color:var(--teal);padding:5px 14px;border-radius:99px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;">TAP TO SPEAK</span>
+      </div>
+      <h2 style="font-family:'Manrope',sans-serif;font-size:clamp(22px,4vw,36px);font-weight:900;text-align:center;margin:0 0 28px;">What did you eat today?</h2>
+
+      <!-- Mic -->
+      <div style="display:flex;flex-direction:column;align-items:center;margin:0 0 24px;">
+        <div style="position:relative;width:160px;height:160px;display:flex;align-items:center;justify-content:center;">
+          <span class="vp-ring" id="vr1" style="display:none;"></span>
+          <span class="vp-ring" id="vr2" style="animation-delay:.55s;display:none;"></span>
+          <button class="mic-btn" id="mic-main" onclick="toggleVoice()">
+            <span class="ms ms-fill" style="color:white;font-size:32px;">mic</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Transcript -->
+      <div style="background:white;border-radius:20px;padding:24px 28px;text-align:center;border:1px solid var(--border);min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
+        <p id="v-text" style="font-family:'Manrope',sans-serif;font-size:18px;color:#9aafab;font-style:italic;margin:0;line-height:1.5;">Tap the mic and say what you ate...<br/><span style="font-size:13px;">Hindi &amp; Indian foods supported 🇮🇳</span></p>
+        <div class="wv" id="waveform" style="display:none;gap:3px;align-items:center;height:24px;">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <!-- Tip -->
+      <div style="background:var(--teal);border-radius:18px;padding:18px 22px;margin-top:14px;display:flex;align-items:flex-start;gap:10px;">
+        <span style="font-size:18px;margin-top:2px;">💡</span>
+        <div>
+          <p style="font-weight:700;color:white;margin:0 0 3px;font-size:14px;">Pro Tip</p>
+          <p style="font-size:12px;color:rgba(255,255,255,.8);margin:0;">Try <em><strong>"2 roti, ek bowl dal tadka aur paneer tikka"</strong></em> — understands Hindi, Hinglish &amp; all Indian food names!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div>
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:14px;">
+        <span class="ms" style="color:var(--teal);">verified</span>
+        <p style="font-weight:800;font-size:15px;margin:0;">Identifying Items</p>
+      </div>
+      <div id="food-cards" style="display:flex;flex-direction:column;gap:9px;"></div>
+      <div id="food-sum" style="display:none;background:white;border-radius:18px;padding:18px;margin-top:14px;border:1px solid var(--border);">
+        <p style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 3px;" id="sum-lbl">TOTAL LUNCH CALORIES</p>
+        <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:7px;">
+          <p id="sum-cal" style="font-family:'Manrope',sans-serif;font-size:38px;font-weight:900;margin:0;line-height:1;color:var(--text);">640</p>
+          <p style="font-size:13px;color:var(--muted);font-weight:600;">kcal</p>
+          <p id="sum-pct" style="margin-left:auto;font-size:11px;font-weight:700;color:var(--teal);">92% Protein Target</p>
+        </div>
+        <div style="height:5px;background:#f0f0f0;border-radius:99px;overflow:hidden;margin-bottom:14px;"><div id="sum-bar" style="height:100%;width:65%;background:linear-gradient(90deg,var(--teal),var(--teal-l));border-radius:99px;"></div></div>
+        <button onclick="confirmMeals()" style="width:100%;background:var(--teal);color:white;border:none;padding:13px;border-radius:13px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-family:inherit;">
+          <span class="ms ms-fill" style="font-size:16px;">save</span>Confirm &amp; Log All
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ NUTRITION ═══════════ -->
+<div id="page-nutrition" class="page">
+  <div style="margin-bottom:24px;">
+    <h2 style="font-size:28px;font-weight:900;margin:0 0 3px;">Nutrition</h2>
+    <p style="color:var(--muted);margin:0;">Track every bite</p>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+    <div style="background:white;border-radius:22px;padding:26px;">
+      <h3 style="font-weight:800;font-size:17px;margin-bottom:18px;">Log a Meal</h3>
+      <div style="display:flex;flex-direction:column;gap:11px;">
+        <input id="n-name" type="text" placeholder="Meal name (e.g. Dal Makhani, Oats)"
+          style="width:100%;padding:12px 15px;border-radius:13px;border:1.5px solid var(--border);font-family:inherit;font-size:13px;outline:none;"
+          onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+        <input id="n-cal" type="number" placeholder="Calories (kcal)"
+          style="width:100%;padding:12px 15px;border-radius:13px;border:1.5px solid var(--border);font-family:inherit;font-size:13px;outline:none;"
+          onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+        <select id="n-time" style="width:100%;padding:12px 15px;border-radius:13px;border:1.5px solid var(--border);font-family:inherit;font-size:13px;outline:none;background:white;">
+          <option>🌅 Breakfast</option><option>☀️ Lunch</option><option>🌙 Dinner</option><option>🍎 Snack</option>
+        </select>
+        <button onclick="addMeal()" style="background:var(--teal);color:white;border:none;padding:13px;border-radius:13px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;">Add Meal</button>
+      </div>
+    </div>
+    <div style="background:white;border-radius:22px;padding:26px;">
+      <h3 style="font-weight:800;font-size:17px;margin-bottom:18px;">Today's Meals</h3>
+      <div id="nut-list" style="display:flex;flex-direction:column;gap:9px;"></div>
+      <div style="border-top:1.5px solid var(--border);margin-top:18px;padding-top:14px;display:flex;justify-content:space-between;align-items:center;">
+        <p style="color:var(--muted);font-size:13px;margin:0;">Total today</p>
+        <p id="nut-total" style="font-family:'Manrope',sans-serif;font-size:24px;font-weight:900;color:var(--teal);margin:0;">1,240 kcal</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- MOBILE NAV -->
+<nav class="mob-nav">
+  <div class="mn-item active" data-page="dashboard"><span class="ms ms-fill" style="font-size:22px;">home</span>Home</div>
+  <div class="mn-item" data-page="fitness"><span class="ms" style="font-size:22px;">bolt</span>Activity</div>
+  <div class="mn-item" data-page="voice"><div class="mn-fab"><span class="ms ms-fill" style="color:white;font-size:22px;">mic</span></div><span style="margin-top:4px;">Voice</span></div>
+  <div class="mn-item" data-page="meditation"><span class="ms" style="font-size:22px;">spa</span>Zen</div>
+  <div class="mn-item" data-page="nutrition"><span class="ms" style="font-size:22px;">restaurant</span>Eat</div>
+</nav>
+
+<!-- NOTIFICATION PERMISSION BANNER -->
+<div id="notif-banner" style="display:none;position:fixed;top:66px;left:0;right:0;z-index:200;background:linear-gradient(135deg,#006b5f,#00a693);color:white;padding:14px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,107,95,.3);">
+  <span style="font-size:22px;">🔔</span>
+  <div style="flex:1;">
+    <p style="font-weight:700;margin:0 0 2px;font-size:14px;">Enable Notifications</p>
+    <p style="font-size:12px;opacity:.85;margin:0;">Get reminded for Meditation (8 AM) &amp; Workout (4:30 PM)</p>
+  </div>
+  <button id="notif-allow-btn" onclick="requestNotifPermission()" style="background:white;color:var(--teal);border:none;padding:9px 18px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;">Enable 🔔</button>
+  <button onclick="document.getElementById('notif-banner').style.display='none'" style="background:rgba(255,255,255,.2);color:white;border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">×</button>
+</div>
+
+<!-- INSTALL BANNER (PWA) -->
+<div id="install-banner" style="display:none;position:fixed;bottom:70px;left:12px;right:12px;z-index:200;background:white;border-radius:18px;padding:16px 18px;box-shadow:0 8px 32px rgba(0,0,0,.15);display:flex;align-items:center;gap:12px;border:1px solid var(--border);">
+  <span style="font-size:28px;">🌿</span>
+  <div style="flex:1;">
+    <p style="font-weight:700;margin:0 0 2px;font-size:14px;">Install Holistic Vitality</p>
+    <p style="font-size:12px;color:var(--muted);margin:0;">Add to your home screen for the full app experience</p>
+  </div>
+  <button id="install-btn" style="background:var(--teal);color:white;border:none;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">Install</button>
+  <button onclick="document.getElementById('install-banner').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px;">×</button>
+</div>
+
+<script>
+// ─── Data ─────────────────────────────────────────────
+let meals=[
+  {name:'Avocado & Poached Egg Toast',cal:340,time:'🌅 Breakfast',e:'🥑'},
+  {name:'Greek Yoghurt + Berries',cal:180,time:'🍎 Snack',e:'🫐'},
+  {name:'Grilled Chicken Salad',cal:420,time:'☀️ Lunch',e:'🥗'},
+  {name:'Protein Shake',cal:220,time:'🍎 Snack',e:'🥛'},
+];
+let totalCal=1240,water=3,medSecs=720,medTotal=720,medOn=false,medT=null;
+let voiceOn=false,vRec=null,pending=[],hiitSecs=0,hiitOn=false,hiitT=null;
+
+const foods={
+  'roti':{n:'Roti',c:140,u:'2 units (whole wheat)',t:'Fibre High',tc:'g',e:'🫓'},
+  'chapati':{n:'Chapati',c:120,u:'2 units',t:'Fibre High',tc:'g',e:'🫓'},
+  'dal tadka':{n:'Dal Tadka',c:180,u:'1 standard bowl',t:'Protein Rich',tc:'o',e:'🍲'},
+  'dal':{n:'Dal Tadka',c:180,u:'1 standard bowl',t:'Protein Rich',tc:'o',e:'🍲'},
+  'paneer tikka':{n:'Paneer Tikka',c:320,u:'6 pieces (1 plate)',t:'Moderate Fat',tc:'o',e:'🧆'},
+  'paneer':{n:'Paneer Tikka',c:320,u:'6 pieces (1 plate)',t:'Moderate Fat',tc:'o',e:'🧆'},
+  'rice':{n:'Steamed Rice',c:200,u:'1 cup cooked',t:'High Carb',tc:'o',e:'🍚'},
+  'biryani':{n:'Biryani',c:450,u:'1 plate',t:'Mixed Macro',tc:'o',e:'🍛'},
+  'samosa':{n:'Samosa',c:130,u:'2 pieces',t:'Moderate Fat',tc:'o',e:'🥟'},
+  'idli':{n:'Idli',c:90,u:'3 pieces',t:'Low Calorie',tc:'g',e:'🫓'},
+  'dosa':{n:'Masala Dosa',c:280,u:'1 large',t:'Fibre Rich',tc:'g',e:'🫔'},
+  'chai':{n:'Masala Chai',c:80,u:'1 cup with milk',t:'Energising',tc:'g',e:'☕'},
+  'paratha':{n:'Aloo Paratha',c:260,u:'1 large',t:'High Carb',tc:'o',e:'🫓'},
+  'chole':{n:'Chole Masala',c:220,u:'1 bowl',t:'Protein Rich',tc:'g',e:'🫘'},
+  'rajma':{n:'Rajma',c:210,u:'1 bowl',t:'Protein Rich',tc:'g',e:'🫘'},
+  'egg':{n:'Boiled Egg',c:78,u:'1 whole',t:'Protein Rich',tc:'g',e:'🥚'},
+  'oats':{n:'Oatmeal',c:150,u:'1 bowl',t:'High Fibre',tc:'g',e:'🥣'},
+  'banana':{n:'Banana',c:89,u:'1 medium',t:'Natural Sugar',tc:'o',e:'🍌'},
+  'apple':{n:'Apple',c:95,u:'1 medium',t:'High Fibre',tc:'g',e:'🍎'},
+  'milk':{n:'Whole Milk',c:150,u:'1 glass 250ml',t:'Calcium Rich',tc:'g',e:'🥛'},
+  'chicken':{n:'Grilled Chicken',c:165,u:'100g',t:'Lean Protein',tc:'g',e:'🍗'},
+  'salad':{n:'Mixed Salad',c:80,u:'1 bowl',t:'Low Calorie',tc:'g',e:'🥗'},
+  'coffee':{n:'Black Coffee',c:5,u:'1 cup',t:'Zero Fat',tc:'g',e:'☕'},
+  'khichdi':{n:'Khichdi',c:210,u:'1 bowl',t:'Balanced Meal',tc:'g',e:'🍲'},
+  'poha':{n:'Poha',c:180,u:'1 plate',t:'Light Breakfast',tc:'g',e:'🍽️'},
+  'upma':{n:'Upma',c:200,u:'1 plate',t:'Fibre Rich',tc:'g',e:'🍽️'},
+};
+
+// ─── Navigation ───────────────────────────────────────
+function switchPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('[data-page]').forEach(x=>{
+    x.classList.remove('active');
+    if(x.dataset.page===p)x.classList.add('active');
+  });
+}
+document.querySelectorAll('[data-page]').forEach(el=>{
+  el.addEventListener('click',e=>{e.preventDefault();if(el.dataset.page)switchPage(el.dataset.page);});
+});
+
+// ─── Toast ────────────────────────────────────────────
+function showToast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ─── Clock ────────────────────────────────────────────
+function tick(){
+  const n=new Date(),h=n.getHours(),m=n.getMinutes().toString().padStart(2,'0');
+  const phase=h<12?'Morning Glow':h<17?'Afternoon Energy':'Evening Wind Down';
+  const h12=((h%12)||12),ap=h>=12?'PM':'AM';
+  const el=document.getElementById('time-badge');
+  if(el)el.textContent=`${h12}:${m} ${ap} · ${phase}`;
+}
+setInterval(tick,12000);tick();
+
+// ─── Dark Mode ────────────────────────────────────────
+let dark=false;
+function toggleDark(){
+  dark=!dark;
+  document.body.style.background=dark?'#0f1a18':'';
+  document.body.style.color=dark?'#e0eae8':'';
+  document.getElementById('darkIcon').textContent=dark?'light_mode':'dark_mode';
+}
+
+// ─── Steps ────────────────────────────────────────────
+(()=>{
+  const t=4821,el=document.getElementById('step-n');let c=0;
+  const i=setInterval(()=>{c=Math.min(c+62,t);el.textContent=c.toLocaleString();if(c>=t)clearInterval(i);},18);
+})();
+
+// ─── Water ────────────────────────────────────────────
+function renderWater(){
+  const c=document.getElementById('water-cups');c.innerHTML='';
+  for(let i=0;i<8;i++){
+    const b=document.createElement('button');
+    b.style.cssText=`width:30px;height:30px;border-radius:9px;border:none;cursor:pointer;font-size:14px;background:${i<water?'#64b5f6':'#f0f5f2'};transition:transform .15s;`;
+    b.textContent='💧';b.title=i<water?'Remove':'Add';
+    b.onclick=()=>{water=i<water?i:i+1;document.getElementById('water-n').textContent=water;renderWater();showToast(water>=8?'🎉 Goal reached!':'💧 '+water+'/8 glasses');};
+    c.appendChild(b);
+  }
+}
+renderWater();
+
+// ─── Meals ────────────────────────────────────────────
+function renderMeals(){
+  ['dash-meals','nut-list'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;el.innerHTML='';
+    meals.slice(-5).forEach((m,i)=>{
+      const row=document.createElement('div');row.className='meal-row';
+      row.innerHTML=`<div style="width:42px;height:42px;border-radius:11px;background:#f0f5f2;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${m.e||'🍽️'}</div><div style="flex:1;min-width:0;"><p style="font-weight:700;font-size:13px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.name}</p><p style="font-size:11px;color:var(--muted);margin:1px 0 0;">${m.cal} kcal · ${m.time.slice(2)}</p></div><button onclick="delMeal(${meals.length-Math.min(meals.length,5)+i})" style="background:none;border:none;cursor:pointer;color:#ccc;padding:3px;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#ccc'"><span class="ms" style="font-size:16px;">close</span></button>`;
+      el.appendChild(row);
+    });
+  });
+  const nt=document.getElementById('nut-total');if(nt)nt.textContent=totalCal.toLocaleString()+' kcal';
+  const dc=document.getElementById('dash-cal');if(dc)dc.textContent=totalCal.toLocaleString();
+}
+renderMeals();
+
+function delMeal(i){totalCal=Math.max(0,totalCal-(meals[i]?.cal||0));meals.splice(i,1);renderMeals();showToast('🗑️ Removed');}
+
+function addMeal(){
+  const name=document.getElementById('n-name').value.trim();
+  const cal=parseInt(document.getElementById('n-cal').value)||0;
+  const time=document.getElementById('n-time').value;
+  if(!name){showToast('⚠️ Enter a meal name');return;}
+  meals.push({name,cal,time,e:'🍽️'});totalCal+=cal;renderMeals();
+  document.getElementById('n-name').value='';document.getElementById('n-cal').value='';
+  showToast('✅ '+name+' logged ('+cal+' kcal)');
+}
+
+// ─── Weekly ───────────────────────────────────────────
+const wdata={steps:[4200,7800,3400,9100,8432,0,0],miles:[2.1,4.0,1.7,4.7,4.3,0,0]};
+const dlbls=['MON','TUE','WED','THU','FRI','SAT','SUN'];
+function drawWeek(v){
+  const d=wdata[v],mx=Math.max(...d);
+  const ch=document.getElementById('week-chart'),lb=document.getElementById('week-labels');
+  if(!ch)return;ch.innerHTML='';lb.innerHTML='';
+  d.forEach((val,i)=>{
+    const pct=mx>0?(val/mx*100):4,isTd=i===4;
+    const col=document.createElement('div');col.className='bar-col';
+    const clr=isTd?'var(--teal)':val>0?'#a8e6dc':'#e8eeec';
+    col.innerHTML=`<div class="bar" style="height:${Math.max(pct,4)}%;min-height:4px;background:${clr};" title="${val.toLocaleString()} ${v}"></div><p class="bar-lbl" style="${isTd?'color:var(--teal);font-weight:800;':''}">${dlbls[i]}</p>`;
+    ch.appendChild(col);
+  });
+  ['steps','miles'].forEach(k=>{
+    const b=document.getElementById('btn-'+k);if(!b)return;
+    const a=k===v;b.style.background=a?'var(--teal)':'#f0f5f2';b.style.color=a?'white':'var(--muted)';
+  });
+}
+function setWeekView(v){drawWeek(v);}
+setTimeout(()=>drawWeek('steps'),50);
+
+// ─── Meditation ───────────────────────────────────────
+function updateMed(){
+  const m=Math.floor(medSecs/60),s=medSecs%60;
+  document.getElementById('med-display').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+  const arc=document.getElementById('med-arc');
+  if(arc)arc.style.strokeDashoffset=565.5-(565.5*(medTotal-medSecs)/medTotal);
+}
+function toggleMed(){
+  if(medOn){clearInterval(medT);medOn=false;document.getElementById('med-icon').textContent='play_arrow';document.getElementById('med-status').textContent='PAUSED';}
+  else{medOn=true;document.getElementById('med-icon').textContent='pause';document.getElementById('med-status').textContent='🌬️ BREATHE...';
+    medT=setInterval(()=>{
+      if(medSecs<=0){clearInterval(medT);medOn=false;document.getElementById('med-icon').textContent='play_arrow';document.getElementById('med-status').textContent='✅ COMPLETE!';showToast('🧘 Session complete! Wonderful.');medSecs=medTotal;updateMed();return;}
+      medSecs--;updateMed();
+    },1000);
+  }
+}
+function medSkip(s){medSecs=Math.max(0,Math.min(medTotal,medSecs+s));updateMed();}
+function pickSound(btn,em,nm){document.querySelectorAll('.sound-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');showToast(em+' '+nm+' selected');}
+function pickSession(el,name,badge,secs){
+  document.querySelectorAll('.med-item').forEach(s=>{s.style.background='#f9f9f9';s.style.borderColor='transparent';const r=s.querySelector('.ms:last-child');if(r){r.textContent='radio_button_unchecked';r.style.color='#ccc';}});
+  el.style.background='#f0fdf9';el.style.borderColor='#a7f3d0';
+  const r=el.querySelector('.ms:last-child');if(r){r.textContent='radio_button_checked';r.style.color='var(--teal)';}
+  clearInterval(medT);medOn=false;medSecs=secs;medTotal=secs;
+  document.getElementById('med-icon').textContent='play_arrow';document.getElementById('med-status').textContent='REMAINING';
+  document.getElementById('med-badge').textContent=badge;updateMed();showToast('🧘 '+name+' selected');
+}
+function renderStreak(){
+  const el=document.getElementById('streak');if(!el)return;
+  const lbls=['M','T','W','T','F','S','S'],done=[true,true,true,true,false,false,false];
+  el.innerHTML=lbls.map((d,i)=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:38px;height:38px;border-radius:50%;background:${done[i]?'var(--teal)':'#f0f5f2'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:${done[i]?'white':'var(--muted)'};">${done[i]?'✓':d}</div><span style="font-size:10px;color:var(--muted);">${d}</span></div>`).join('');
+}
+renderStreak();updateMed();
+
+// ─── HIIT ─────────────────────────────────────────────
+function startHiit(){
+  if(hiitOn){clearInterval(hiitT);hiitOn=false;document.getElementById('hiit-btn').textContent='Start Timer';return;}
+  hiitOn=true;hiitSecs=0;
+  document.getElementById('hiit-btn').textContent='Stop (0:00)';
+  hiitT=setInterval(()=>{
+    hiitSecs++;const m=Math.floor(hiitSecs/60),s=hiitSecs%60;
+    document.getElementById('hiit-btn').textContent=`Stop (${m}:${s.toString().padStart(2,'0')})`;
+    if(hiitSecs>=900){clearInterval(hiitT);hiitOn=false;document.getElementById('hiit-btn').textContent='✅ Complete!';showToast('🔥 HIIT done! Excellent!');}
+  },1000);
+}
+
+// ─── Voice ────────────────────────────────────────────
+function toggleVoice(){voiceOn?stopVoice():startVoice();}
+function startVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){
+    vRec=new SR();vRec.lang='hi-IN';vRec.continuous=false;vRec.interimResults=true;
+    setVoiceUI(true);
+    vRec.onresult=e=>{
+      let fi='',it='';
+      for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)fi+=e.results[i][0].transcript;else it+=e.results[i][0].transcript;}
+      const txt=fi||it;showTranscript(txt,!!fi);
+      if(fi){parseFood(fi);stopVoice();}
+    };
+    vRec.onerror=()=>demoVoice();
+    vRec.onend=()=>{if(voiceOn)stopVoice();};
+    try{vRec.start();}catch(e){demoVoice();}
+  } else {demoVoice();}
+}
+function stopVoice(){if(vRec)try{vRec.stop();}catch(e){}setVoiceUI(false);}
+function setVoiceUI(on){
+  voiceOn=on;
+  ['vr1','vr2'].forEach(id=>document.getElementById(id).style.display=on?'block':'none');
+  document.getElementById('waveform').style.display=on?'flex':'none';
+  document.getElementById('mic-main').style.background=on?'var(--teal-d)':'var(--teal)';
+  document.getElementById('v-badge').textContent=on?'🎤 LISTENING NOW':'TAP TO SPEAK';
+  document.getElementById('v-badge').style.background=on?'#dcfce7':'#e0f2ef';
+}
+function showTranscript(txt,final){
+  const el=document.getElementById('v-text');
+  let hl=txt;
+  Object.keys(foods).sort((a,b)=>b.length-a.length).forEach(k=>{
+    const re=new RegExp(k,'gi');
+    hl=hl.replace(re,`<span style="color:var(--teal);font-weight:800;font-style:italic;">${k}</span>`);
+  });
+  el.innerHTML='"'+hl+'"';el.style.color='#1a2624';el.style.fontStyle='normal';
+  if(final)parseFood(txt);
+}
+function parseFood(txt){
+  const lo=txt.toLowerCase();pending=[];
+  const seen=new Set();
+  Object.keys(foods).sort((a,b)=>b.length-a.length).forEach(k=>{
+    if(lo.includes(k)&&!seen.has(foods[k].n)){pending.push({...foods[k]});seen.add(foods[k].n);}
+  });
+  if(!pending.length)pending.push({n:txt.split(' ').slice(0,4).join(' '),c:200,u:'1 serving',t:'Estimated',tc:'o',e:'🍽️'});
+  renderFoodCards();
+}
+function renderFoodCards(){
+  const el=document.getElementById('food-cards');el.innerHTML='';
+  let tot=0;
+  pending.forEach((f,i)=>{
+    tot+=f.c;
+    const card=document.createElement('div');
+    card.className='food-card'+(i===0?' sel':'');
+    card.innerHTML=`<div class="food-emoji">${f.e}</div><div style="flex:1;"><p style="font-weight:800;font-size:14px;margin:0 0 2px;">${f.n}</p><p style="font-size:11px;color:var(--muted);margin:0 0 5px;">${f.u}</p><div style="display:flex;gap:5px;"><span class="tag tag-g">${f.c} kcal</span><span class="tag ${f.tc==='g'?'tag-g':'tag-o'}">${f.t}</span></div></div>`;
+    el.appendChild(card);
+  });
+  const sum=document.getElementById('food-sum');sum.style.display='block';
+  document.getElementById('sum-cal').textContent=tot;
+  document.getElementById('sum-bar').style.width=Math.min(Math.round(tot/2100*100),100)+'%';
+  document.getElementById('sum-pct').textContent=Math.round(tot/130*100)+'% Protein Target';
+}
+function confirmMeals(){
+  pending.forEach(f=>meals.push({name:f.n,cal:f.c,time:'☀️ Lunch',e:f.e}));
+  totalCal+=pending.reduce((a,f)=>a+f.c,0);
+  renderMeals();
+  document.getElementById('food-cards').innerHTML='';
+  document.getElementById('food-sum').style.display='none';
+  document.getElementById('v-text').innerHTML='Meals logged! Tap mic to add more.<br/><span style="font-size:12px;">Hindi &amp; Indian foods supported 🇮🇳</span>';
+  document.getElementById('v-text').style.color='#9aafab';
+  document.getElementById('v-text').style.fontStyle='italic';
+  pending=[];showToast('✅ All meals logged!');
+}
+function demoVoice(){
+  setVoiceUI(true);
+  const words=['"Log ','2 ','rotis, ','one ','bowl ','of ','dal ','tadka, ','and ','a ','plate ','of ','paneer ','tikka ','for ','lunch."'];
+  let built='',i=0;
+  const iv=setInterval(()=>{
+    if(i>=words.length){clearInterval(iv);setTimeout(()=>{stopVoice();parseFood('2 rotis, one bowl of dal tadka, and a plate of paneer tikka for lunch');showTranscript('2 rotis, one bowl of dal tadka, and a plate of paneer tikka for lunch',true);},400);return;}
+    built+=words[i++];document.getElementById('v-text').innerHTML=built;document.getElementById('v-text').style.color='#1a2624';document.getElementById('v-text').style.fontStyle='normal';
+  },110);
+}
+
+// ─── Service Worker + Notifications ──────────────────
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const banner = document.getElementById('install-banner');
+  if (banner) { banner.style.display = 'flex'; }
+});
+
+document.getElementById('install-btn')?.addEventListener('click', () => {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(() => {
+      document.getElementById('install-banner').style.display = 'none';
+    });
+  }
+});
+
+async function registerSW() {
+  if (!('serviceWorker' in navigator)) return;
+  try {
+    const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    console.log('SW registered:', reg.scope);
+
+    // Register periodic sync if supported (Android Chrome)
+    if ('periodicSync' in reg) {
+      try {
+        await reg.periodicSync.register('check-notifications', { minInterval: 60 * 60 * 1000 });
+      } catch (e) { /* not supported */ }
+    }
+
+    // Tell SW to schedule notifications
+    if (Notification.permission === 'granted') {
+      reg.active?.postMessage({ type: 'SCHEDULE_NOTIFS' });
+    }
+  } catch (e) {
+    console.log('SW registration failed:', e);
+  }
+}
+
+async function requestNotifPermission() {
+  if (!('Notification' in window)) {
+    showToast('❌ Notifications not supported in this browser');
+    return;
+  }
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    document.getElementById('notif-banner').style.display = 'none';
+    showToast('✅ Notifications enabled! You\'ll be reminded at 8 AM & 4:30 PM daily.');
+    const reg = await navigator.serviceWorker.ready;
+    reg.active?.postMessage({ type: 'SCHEDULE_NOTIFS' });
+    // Send a test notification immediately
+    setTimeout(() => reg.active?.postMessage({ type: 'TEST_NOTIF' }), 1500);
+  } else {
+    showToast('⚠️ Permission denied — enable notifications in browser settings');
+  }
+}
+
+// Show notification banner if not yet granted
+window.addEventListener('load', async () => {
+  await registerSW();
+
+  // Show banner if notifications not yet decided
+  if ('Notification' in window && Notification.permission === 'default') {
+    setTimeout(() => {
+      const banner = document.getElementById('notif-banner');
+      if (banner) banner.style.display = 'flex';
+    }, 2000);
+  }
+
+  // Handle ?page= deep links from notification tap
+  const params = new URLSearchParams(location.search);
+  const page = params.get('page');
+  if (page && ['dashboard','fitness','meditation','voice','nutrition'].includes(page)) {
+    switchPage(page);
+  }
+});
+</script>
+</body>
+</html>
