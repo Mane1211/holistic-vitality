@@ -9,7 +9,7 @@ self.addEventListener('install', e => {
   self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache =>
-      cache.addAll(['/holistic-vitality/','/holistic-vitality/index.html','/holistic-vitality/manifest.json'])
+      cache.addAll(['/', '/index.html', '/manifest.json'])
     )
   );
 });

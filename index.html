@@ -113,6 +113,21 @@ h1,h2,h3,h4{font-family:'Manrope',sans-serif;}
 .wv span:nth-child(3){animation-delay:.24s;}
 .wv span:nth-child(4){animation-delay:.36s;}
 
+/* ── Profile Modal ── */
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal-box{background:white;border-radius:28px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.2);}
+.modal-header{background:linear-gradient(135deg,var(--teal),var(--teal-m));padding:32px 28px 24px;text-align:center;}
+.avatar-pick{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.avatar-opt{width:44px;height:44px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid transparent;transition:all .2s;}
+.avatar-opt.picked{border-color:white;transform:scale(1.12);box-shadow:0 0 0 2px var(--teal);}
+.form-input{width:100%;padding:12px 15px;border-radius:13px;border:1.5px solid var(--border);font-family:inherit;font-size:14px;outline:none;transition:border .2s;background:white;}
+.form-input:focus{border-color:var(--teal);}
+.form-label{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.06em;}
+
+/* ── Profile Page ── */
+.stat-tile{background:var(--surface);border-radius:18px;padding:18px;text-align:center;}
+.stat-num{font-family:'Manrope',sans-serif;font-size:28px;font-weight:900;margin:0;line-height:1;}
+
 /* Meal row */
 .meal-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:white;transition:transform .15s;cursor:pointer;}
 .meal-row:hover{transform:translateX(4px);}
@@ -149,6 +164,7 @@ h1,h2,h3,h4{font-family:'Manrope',sans-serif;}
     <a data-page="voice">Voice Log</a>
     <a data-page="meditation">Zen</a>
     <a data-page="nutrition">Eat</a>
+    <a data-page="profile">Profile</a>
   </nav>
   <div class="top-right">
     <button class="icon-btn" onclick="showToast('🔔 Meditation 8:00 AM · Workout 4:30 PM')">
@@ -158,7 +174,7 @@ h1,h2,h3,h4{font-family:'Manrope',sans-serif;}
     <button class="icon-btn" onclick="toggleDark()" id="darkBtn">
       <span class="ms" id="darkIcon">dark_mode</span>
     </button>
-    <div class="avatar">SIA</div>
+    <div class="avatar" id="top-avatar" onclick="switchPage('profile')" style="cursor:pointer;" title="My Profile"></div>
   </div>
 </header>
 
@@ -174,6 +190,7 @@ h1,h2,h3,h4{font-family:'Manrope',sans-serif;}
     <a class="nav-item" data-page="fitness"><span class="ms">fitness_center</span>Fitness</a>
     <a class="nav-item" data-page="meditation"><span class="ms">self_improvement</span>Meditation</a>
     <a class="nav-item" data-page="nutrition"><span class="ms">restaurant</span>Nutrition</a>
+    <a class="nav-item" data-page="profile"><span class="ms">person</span>My Profile</a>
     <button class="sidebar-cta" onclick="switchPage('voice')">🎤 Start Food Tracking</button>
   </div>
 </aside>
@@ -547,7 +564,189 @@ h1,h2,h3,h4{font-family:'Manrope',sans-serif;}
   </div>
 </div>
 
+<!-- ═══════════ PROFILE ═══════════ -->
+<div id="page-profile" class="page">
+  <!-- Profile header card -->
+  <div style="background:linear-gradient(135deg,var(--teal),var(--teal-m));border-radius:26px;padding:32px;margin-bottom:20px;position:relative;overflow:hidden;">
+    <div style="position:absolute;right:-20px;top:-20px;width:180px;height:180px;background:rgba(255,255,255,.08);border-radius:50%;"></div>
+    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+      <div id="profile-avatar-display" style="width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:36px;border:3px solid rgba(255,255,255,.5);flex-shrink:0;"></div>
+      <div>
+        <p style="color:rgba(255,255,255,.7);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin:0 0 4px;">Welcome back</p>
+        <h2 id="profile-name-display" style="font-size:32px;font-weight:900;color:white;margin:0 0 4px;"></h2>
+        <p id="profile-meta-display" style="color:rgba(255,255,255,.75);font-size:14px;margin:0;"></p>
+      </div>
+      <button onclick="openProfileEdit()" style="margin-left:auto;background:rgba(255,255,255,.2);color:white;border:2px solid rgba(255,255,255,.4);padding:10px 20px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;backdrop-filter:blur(8px);">✏️ Edit Profile</button>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;" id="profile-stats-grid">
+    <div class="stat-tile"><p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px;">Meals Logged</p><p class="stat-num" style="color:var(--teal);" id="stat-meals">0</p><p style="font-size:11px;color:#aaa;margin:4px 0 0;">this session</p></div>
+    <div class="stat-tile"><p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px;">Calories Today</p><p class="stat-num" style="color:var(--org);" id="stat-cal">0</p><p style="font-size:11px;color:#aaa;margin:4px 0 0;">kcal</p></div>
+    <div class="stat-tile"><p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px;">Water</p><p class="stat-num" style="color:#64b5f6;" id="stat-water">0</p><p style="font-size:11px;color:#aaa;margin:4px 0 0;">glasses</p></div>
+    <div class="stat-tile"><p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px;">Med Streak</p><p class="stat-num" style="color:#7c3aed;" id="stat-streak">4</p><p style="font-size:11px;color:#aaa;margin:4px 0 0;">days 🔥</p></div>
+  </div>
+
+  <!-- Goals + Settings -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div style="background:white;border-radius:22px;padding:24px;">
+      <h3 style="font-weight:800;font-size:17px;margin-bottom:18px;">My Goals</h3>
+      <div style="display:flex;flex-direction:column;gap:14px;" id="goals-display"></div>
+    </div>
+    <div style="background:white;border-radius:22px;padding:24px;">
+      <h3 style="font-weight:800;font-size:17px;margin-bottom:18px;">Settings & Notifications</h3>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div><p style="font-weight:700;font-size:14px;margin:0 0 2px;">Meditation Reminder</p><p style="font-size:12px;color:var(--muted);margin:0;">8:00 AM daily</p></div>
+          <div id="tog-med" onclick="toggleSetting('med')" style="width:46px;height:26px;border-radius:99px;background:var(--teal);cursor:pointer;position:relative;transition:background .2s;"><div style="width:20px;height:20px;background:white;border-radius:50%;position:absolute;top:3px;right:3px;transition:right .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);"></div></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div><p style="font-weight:700;font-size:14px;margin:0 0 2px;">Workout Reminder</p><p style="font-size:12px;color:var(--muted);margin:0;">4:30 PM daily</p></div>
+          <div id="tog-work" onclick="toggleSetting('work')" style="width:46px;height:26px;border-radius:99px;background:var(--teal);cursor:pointer;position:relative;transition:background .2s;"><div style="width:20px;height:20px;background:white;border-radius:50%;position:absolute;top:3px;right:3px;transition:right .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);"></div></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div><p style="font-weight:700;font-size:14px;margin:0 0 2px;">Dark Mode</p><p style="font-size:12px;color:var(--muted);margin:0;">Toggle theme</p></div>
+          <div id="tog-dark" onclick="toggleDark();updateDarkToggle()" style="width:46px;height:26px;border-radius:99px;background:#e0e0e0;cursor:pointer;position:relative;transition:background .2s;"><div id="dark-knob" style="width:20px;height:20px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);"></div></div>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:4px 0;"/>
+        <button onclick="requestNotifPermission()" style="background:#f0fdf9;color:var(--teal);border:1.5px solid var(--teal-l);padding:11px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">🔔 Test Notification</button>
+        <button onclick="clearAllData()" style="background:#fff5f5;color:#ef4444;border:1.5px solid #fecaca;padding:11px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">🗑️ Clear All My Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share section -->
+  <div style="background:linear-gradient(135deg,#f0fdf9,#e0f2ef);border-radius:22px;padding:24px;margin-top:16px;border:1px solid var(--teal-l);">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="flex:1;">
+        <h3 style="font-weight:800;font-size:17px;margin:0 0 6px;">👥 Share with a Friend</h3>
+        <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">Your friend opens the same link and creates their own profile. All data is stored separately on each device — completely private.</p>
+        <div style="background:white;border-radius:12px;padding:12px 16px;font-size:13px;font-weight:700;color:var(--teal);word-break:break-all;border:1px solid var(--border);" id="share-url"></div>
+      </div>
+      <button onclick="shareApp()" style="background:var(--teal);color:white;border:none;padding:14px 24px;border-radius:14px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <span class="ms" style="font-size:18px;color:white;">share</span> Share App
+      </button>
+    </div>
+  </div>
+</div>
+
 </main>
+
+<!-- ═══════════ ONBOARDING MODAL ═══════════ -->
+<div class="modal-overlay" id="onboard-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div style="font-size:44px;margin-bottom:10px;">🌿</div>
+      <h2 style="color:white;font-size:24px;font-weight:900;margin:0 0 6px;">Welcome to Holistic Vitality</h2>
+      <p style="color:rgba(255,255,255,.8);font-size:14px;margin:0;">Let's set up your personal wellness profile</p>
+    </div>
+    <div style="padding:28px;">
+      <!-- Step indicator -->
+      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:24px;">
+        <div id="step-dot-1" style="width:28px;height:5px;border-radius:99px;background:var(--teal);transition:all .3s;"></div>
+        <div id="step-dot-2" style="width:10px;height:5px;border-radius:99px;background:#e0e0e0;transition:all .3s;"></div>
+        <div id="step-dot-3" style="width:10px;height:5px;border-radius:99px;background:#e0e0e0;transition:all .3s;"></div>
+      </div>
+
+      <!-- Step 1: Name + Avatar -->
+      <div id="ob-step-1">
+        <label class="form-label">Your Name</label>
+        <input id="ob-name" class="form-input" type="text" placeholder="e.g. Sia, Rahul, Priya..." maxlength="20" style="margin-bottom:16px;"/>
+        <label class="form-label">Pick your avatar</label>
+        <div class="avatar-pick" style="margin-bottom:8px;">
+          <div class="avatar-opt picked" data-av="🌸" onclick="pickAvatar(this)" style="background:#fce4ec;">🌸</div>
+          <div class="avatar-opt" data-av="🌿" onclick="pickAvatar(this)" style="background:#e8f5e9;">🌿</div>
+          <div class="avatar-opt" data-av="⚡" onclick="pickAvatar(this)" style="background:#fff9c4;">⚡</div>
+          <div class="avatar-opt" data-av="🧘" onclick="pickAvatar(this)" style="background:#e8eaf6;">🧘</div>
+          <div class="avatar-opt" data-av="🏋️" onclick="pickAvatar(this)" style="background:#e0f2f1;">🏋️</div>
+          <div class="avatar-opt" data-av="🦋" onclick="pickAvatar(this)" style="background:#f3e5f5;">🦋</div>
+          <div class="avatar-opt" data-av="🔥" onclick="pickAvatar(this)" style="background:#fbe9e7;">🔥</div>
+          <div class="avatar-opt" data-av="🌙" onclick="pickAvatar(this)" style="background:#e8eaf6;">🌙</div>
+        </div>
+      </div>
+
+      <!-- Step 2: Body info -->
+      <div id="ob-step-2" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <label class="form-label">Age</label>
+            <input id="ob-age" class="form-input" type="number" placeholder="e.g. 28" min="10" max="99"/>
+          </div>
+          <div>
+            <label class="form-label">Gender</label>
+            <select id="ob-gender" class="form-input" style="background:white;">
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other / Prefer not to say</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Weight (kg)</label>
+            <input id="ob-weight" class="form-input" type="number" placeholder="e.g. 65" min="30" max="200"/>
+          </div>
+          <div>
+            <label class="form-label">Height (cm)</label>
+            <input id="ob-height" class="form-input" type="number" placeholder="e.g. 165" min="100" max="250"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Goals -->
+      <div id="ob-step-3" style="display:none;">
+        <label class="form-label" style="margin-bottom:10px;">Select your goals (tap all that apply)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;">
+          <div class="goal-chip" onclick="toggleGoal(this,'lose_weight')" style="padding:12px 14px;border-radius:14px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;transition:all .2s;">🏃 Lose Weight</div>
+          <div class="goal-chip" onclick="toggleGoal(this,'gain_muscle')" style="padding:12px 14px;border-radius:14px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;transition:all .2s;">💪 Gain Muscle</div>
+          <div class="goal-chip" onclick="toggleGoal(this,'meditate')" style="padding:12px 14px;border-radius:14px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;transition:all .2s;">🧘 Daily Meditation</div>
+          <div class="goal-chip" onclick="toggleGoal(this,'eat_better')" style="padding:12px 14px;border-radius:14px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;transition:all .2s;">🥗 Eat Healthier</div>
+          <div class="goal-chip" onclick="toggleGoal(this,'sleep')" style="padding:12px 14px;border-radius:14px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;transition:all .2s;">😴 Better Sleep</div>
+          <div class="goal-chip" onclick="toggleGoal(this,'steps')" style="padding:12px 14px;border-radius:14px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;transition:all .2s;">👟 10k Steps</div>
+        </div>
+      </div>
+
+      <!-- Nav buttons -->
+      <div style="display:flex;gap:10px;margin-top:24px;">
+        <button id="ob-back" onclick="obBack()" style="display:none;flex:1;background:var(--surface);color:var(--text);border:none;padding:14px;border-radius:14px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;">← Back</button>
+        <button id="ob-next" onclick="obNext()" style="flex:2;background:var(--teal);color:white;border:none;padding:14px;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;">Continue →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EDIT PROFILE MODAL ═══════════ -->
+<div class="modal-overlay" id="edit-modal" style="display:none;">
+  <div class="modal-box">
+    <div style="background:linear-gradient(135deg,var(--teal),var(--teal-m));padding:22px 24px;display:flex;align-items:center;justify-content:space-between;">
+      <h3 style="color:white;font-weight:800;font-size:18px;margin:0;">Edit Profile</h3>
+      <button onclick="closeEditModal()" style="background:rgba(255,255,255,.2);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;">×</button>
+    </div>
+    <div style="padding:24px;display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label class="form-label">Name</label>
+        <input id="edit-name" class="form-input" type="text" maxlength="20"/>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div><label class="form-label">Age</label><input id="edit-age" class="form-input" type="number" min="10" max="99"/></div>
+        <div><label class="form-label">Weight (kg)</label><input id="edit-weight" class="form-input" type="number" min="30" max="200"/></div>
+        <div><label class="form-label">Height (cm)</label><input id="edit-height" class="form-input" type="number" min="100" max="250"/></div>
+        <div><label class="form-label">Calorie Goal</label><input id="edit-cal-goal" class="form-input" type="number" placeholder="2100"/></div>
+      </div>
+      <label class="form-label">Avatar</label>
+      <div class="avatar-pick">
+        <div class="avatar-opt" data-av="🌸" onclick="pickEditAvatar(this)" style="background:#fce4ec;">🌸</div>
+        <div class="avatar-opt" data-av="🌿" onclick="pickEditAvatar(this)" style="background:#e8f5e9;">🌿</div>
+        <div class="avatar-opt" data-av="⚡" onclick="pickEditAvatar(this)" style="background:#fff9c4;">⚡</div>
+        <div class="avatar-opt" data-av="🧘" onclick="pickEditAvatar(this)" style="background:#e8eaf6;">🧘</div>
+        <div class="avatar-opt" data-av="🏋️" onclick="pickEditAvatar(this)" style="background:#e0f2f1;">🏋️</div>
+        <div class="avatar-opt" data-av="🦋" onclick="pickEditAvatar(this)" style="background:#f3e5f5;">🦋</div>
+        <div class="avatar-opt" data-av="🔥" onclick="pickEditAvatar(this)" style="background:#fbe9e7;">🔥</div>
+        <div class="avatar-opt" data-av="🌙" onclick="pickEditAvatar(this)" style="background:#e8eaf6;">🌙</div>
+      </div>
+      <button onclick="saveEditProfile()" style="background:var(--teal);color:white;border:none;padding:14px;border-radius:14px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;margin-top:4px;">Save Changes</button>
+    </div>
+  </div>
+</div>
 </div>
 
 <!-- MOBILE NAV -->
@@ -557,6 +756,7 @@ h1,h2,h3,h4{font-family:'Manrope',sans-serif;}
   <div class="mn-item" data-page="voice"><div class="mn-fab"><span class="ms ms-fill" style="color:white;font-size:22px;">mic</span></div><span style="margin-top:4px;">Voice</span></div>
   <div class="mn-item" data-page="meditation"><span class="ms" style="font-size:22px;">spa</span>Zen</div>
   <div class="mn-item" data-page="nutrition"><span class="ms" style="font-size:22px;">restaurant</span>Eat</div>
+  <div class="mn-item" data-page="profile"><span class="ms" style="font-size:22px;">person</span>Me</div>
 </nav>
 
 <!-- NOTIFICATION PERMISSION BANNER -->
@@ -577,11 +777,277 @@ h1,h2,h3,h4{font-family:'Manrope',sans-serif;}
     <p style="font-weight:700;margin:0 0 2px;font-size:14px;">Install Holistic Vitality</p>
     <p style="font-size:12px;color:var(--muted);margin:0;">Add to your home screen for the full app experience</p>
   </div>
-  <button id="install-btn" style="background:var(--teal);color:white;border:none;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">Install</button>
+  <button id="install-btn" onclick="installApp()" style="background:var(--teal);color:white;border:none;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">Install</button>
   <button onclick="document.getElementById('install-banner').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px;">×</button>
 </div>
 
 <script>
+// ─── Profile & Persistence ────────────────────────────
+const STORE_KEY = 'hv_profile';
+const MEALS_KEY = 'hv_meals';
+const WATER_KEY = 'hv_water';
+
+let profile = {
+  name: '', avatar: '🌸', age: '', gender: 'female',
+  weight: '', height: '', calGoal: 2100,
+  goals: [], notifMed: true, notifWork: true,
+  setupDone: false
+};
+
+let obStep = 1;
+let selectedGoals = [];
+let pickedAvatar = '🌸';
+let editAvatar = '🌸';
+
+function loadProfile() {
+  const saved = localStorage.getItem(STORE_KEY);
+  if (saved) { try { profile = {...profile, ...JSON.parse(saved)}; } catch(e){} }
+}
+
+function saveProfile() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(profile));
+}
+
+function loadMeals() {
+  const saved = localStorage.getItem(MEALS_KEY);
+  if (saved) { try { meals = JSON.parse(saved); totalCal = meals.reduce((a,m)=>a+m.cal,0); } catch(e){} }
+}
+
+function saveMeals() {
+  localStorage.setItem(MEALS_KEY, JSON.stringify(meals));
+}
+
+function loadWater() {
+  const saved = localStorage.getItem(WATER_KEY);
+  if (saved) { water = parseInt(saved)||0; }
+}
+
+function saveWater() {
+  localStorage.setItem(WATER_KEY, String(water));
+}
+
+// ─── Onboarding ───────────────────────────────────────
+function showOnboarding() {
+  document.getElementById('onboard-modal').style.display = 'flex';
+}
+function hideOnboarding() {
+  document.getElementById('onboard-modal').style.display = 'none';
+}
+
+function obNext() {
+  if (obStep === 1) {
+    const name = document.getElementById('ob-name').value.trim();
+    if (!name) { showToast('⚠️ Please enter your name'); document.getElementById('ob-name').focus(); return; }
+    profile.name = name;
+    profile.avatar = pickedAvatar;
+    obStep = 2;
+    document.getElementById('ob-step-1').style.display = 'none';
+    document.getElementById('ob-step-2').style.display = 'block';
+    document.getElementById('ob-back').style.display = 'block';
+    document.getElementById('step-dot-1').style.width = '10px';
+    document.getElementById('step-dot-2').style.width = '28px';
+    document.getElementById('step-dot-2').style.background = 'var(--teal)';
+  } else if (obStep === 2) {
+    profile.age = document.getElementById('ob-age').value || '';
+    profile.gender = document.getElementById('ob-gender').value;
+    profile.weight = document.getElementById('ob-weight').value || '';
+    profile.height = document.getElementById('ob-height').value || '';
+    // calc calorie goal based on stats
+    if (profile.weight && profile.height && profile.age) {
+      const bmr = profile.gender === 'male'
+        ? 88.4 + 13.4*profile.weight + 4.8*profile.height - 5.7*profile.age
+        : 447.6 + 9.2*profile.weight + 3.1*profile.height - 4.3*profile.age;
+      profile.calGoal = Math.round(bmr * 1.55);
+    }
+    obStep = 3;
+    document.getElementById('ob-step-2').style.display = 'none';
+    document.getElementById('ob-step-3').style.display = 'block';
+    document.getElementById('step-dot-2').style.width = '10px';
+    document.getElementById('step-dot-3').style.width = '28px';
+    document.getElementById('step-dot-3').style.background = 'var(--teal)';
+    document.getElementById('ob-next').textContent = '🚀 Start My Journey';
+  } else if (obStep === 3) {
+    profile.goals = selectedGoals;
+    profile.setupDone = true;
+    saveProfile();
+    hideOnboarding();
+    applyProfile();
+    showToast('🎉 Welcome, ' + profile.name + '! Your profile is ready.');
+    requestNotifPermission();
+  }
+}
+
+function obBack() {
+  if (obStep === 2) {
+    obStep = 1;
+    document.getElementById('ob-step-2').style.display = 'none';
+    document.getElementById('ob-step-1').style.display = 'block';
+    document.getElementById('ob-back').style.display = 'none';
+    document.getElementById('step-dot-1').style.width = '28px';
+    document.getElementById('step-dot-2').style.width = '10px';
+    document.getElementById('step-dot-2').style.background = '#e0e0e0';
+    document.getElementById('ob-next').textContent = 'Continue →';
+  } else if (obStep === 3) {
+    obStep = 2;
+    document.getElementById('ob-step-3').style.display = 'none';
+    document.getElementById('ob-step-2').style.display = 'block';
+    document.getElementById('step-dot-3').style.width = '10px';
+    document.getElementById('step-dot-3').style.background = '#e0e0e0';
+    document.getElementById('step-dot-2').style.width = '28px';
+    document.getElementById('ob-next').textContent = 'Continue →';
+  }
+}
+
+function pickAvatar(el) {
+  document.querySelectorAll('#ob-step-1 .avatar-opt').forEach(a => a.classList.remove('picked'));
+  el.classList.add('picked');
+  pickedAvatar = el.dataset.av;
+}
+
+function pickEditAvatar(el) {
+  document.querySelectorAll('#edit-modal .avatar-opt').forEach(a => a.classList.remove('picked'));
+  el.classList.add('picked');
+  editAvatar = el.dataset.av;
+}
+
+function toggleGoal(el, key) {
+  const i = selectedGoals.indexOf(key);
+  if (i >= 0) {
+    selectedGoals.splice(i, 1);
+    el.style.background = 'white';
+    el.style.borderColor = 'var(--border)';
+    el.style.color = 'var(--text)';
+  } else {
+    selectedGoals.push(key);
+    el.style.background = '#e0f2ef';
+    el.style.borderColor = 'var(--teal)';
+    el.style.color = 'var(--teal)';
+  }
+}
+
+// ─── Apply Profile to UI ──────────────────────────────
+function applyProfile() {
+  if (!profile.name) return;
+  // topbar avatar
+  const av = document.getElementById('top-avatar');
+  if (av) av.textContent = profile.avatar;
+  // hero greeting
+  const h = document.querySelector('h2'); // dashboard hero h2
+  const heroH = document.querySelector('#page-dashboard h2');
+  if (heroH) heroH.innerHTML = `Good Morning,<br/>${profile.name}`;
+  // profile page
+  const pd = document.getElementById('profile-avatar-display');
+  if (pd) pd.textContent = profile.avatar;
+  const pn = document.getElementById('profile-name-display');
+  if (pn) pn.textContent = profile.name;
+  const pm = document.getElementById('profile-meta-display');
+  if (pm) {
+    const parts = [];
+    if (profile.age) parts.push(profile.age + ' yrs');
+    if (profile.weight) parts.push(profile.weight + ' kg');
+    if (profile.height) parts.push(profile.height + ' cm');
+    if (profile.calGoal) parts.push('Goal: ' + profile.calGoal + ' kcal');
+    pm.textContent = parts.join(' · ');
+  }
+  // stats
+  const sm = document.getElementById('stat-meals');
+  if (sm) sm.textContent = meals.length;
+  const sc = document.getElementById('stat-cal');
+  if (sc) sc.textContent = totalCal.toLocaleString();
+  const sw = document.getElementById('stat-water');
+  if (sw) sw.textContent = water;
+  // goals
+  const gd = document.getElementById('goals-display');
+  if (gd) {
+    const goalMap = {lose_weight:'🏃 Lose Weight',gain_muscle:'💪 Gain Muscle',meditate:'🧘 Daily Meditation',eat_better:'🥗 Eat Healthier',sleep:'😴 Better Sleep',steps:'👟 10k Steps'};
+    if (profile.goals && profile.goals.length) {
+      gd.innerHTML = profile.goals.map(g => `<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#f0fdf9;border-radius:13px;font-weight:600;font-size:14px;color:var(--teal);">${goalMap[g]||g}<span class="ms ms-fill" style="margin-left:auto;font-size:16px;color:var(--teal);">check_circle</span></div>`).join('');
+    } else {
+      gd.innerHTML = '<p style="color:var(--muted);font-size:13px;">No goals set yet. Edit your profile to add some!</p>';
+    }
+  }
+  // share url
+  const su = document.getElementById('share-url');
+  if (su) su.textContent = location.origin + location.pathname;
+}
+
+// ─── Edit Profile Modal ───────────────────────────────
+function openProfileEdit() {
+  document.getElementById('edit-name').value = profile.name;
+  document.getElementById('edit-age').value = profile.age || '';
+  document.getElementById('edit-weight').value = profile.weight || '';
+  document.getElementById('edit-height').value = profile.height || '';
+  document.getElementById('edit-cal-goal').value = profile.calGoal || 2100;
+  editAvatar = profile.avatar;
+  document.querySelectorAll('#edit-modal .avatar-opt').forEach(a => {
+    a.classList.toggle('picked', a.dataset.av === profile.avatar);
+  });
+  document.getElementById('edit-modal').style.display = 'flex';
+}
+function closeEditModal() { document.getElementById('edit-modal').style.display = 'none'; }
+function saveEditProfile() {
+  profile.name = document.getElementById('edit-name').value.trim() || profile.name;
+  profile.age = document.getElementById('edit-age').value;
+  profile.weight = document.getElementById('edit-weight').value;
+  profile.height = document.getElementById('edit-height').value;
+  profile.calGoal = parseInt(document.getElementById('edit-cal-goal').value) || 2100;
+  profile.avatar = editAvatar;
+  saveProfile();
+  closeEditModal();
+  applyProfile();
+  showToast('✅ Profile updated!');
+}
+
+// ─── Settings toggles ─────────────────────────────────
+function toggleSetting(key) {
+  if (key === 'med') {
+    profile.notifMed = !profile.notifMed;
+    const t = document.getElementById('tog-med');
+    t.style.background = profile.notifMed ? 'var(--teal)' : '#e0e0e0';
+    t.querySelector('div').style.right = profile.notifMed ? '3px' : 'auto';
+    t.querySelector('div').style.left = profile.notifMed ? 'auto' : '3px';
+    showToast(profile.notifMed ? '🧘 Meditation reminders on' : '🔕 Meditation reminders off');
+  } else {
+    profile.notifWork = !profile.notifWork;
+    const t = document.getElementById('tog-work');
+    t.style.background = profile.notifWork ? 'var(--teal)' : '#e0e0e0';
+    t.querySelector('div').style.right = profile.notifWork ? '3px' : 'auto';
+    t.querySelector('div').style.left = profile.notifWork ? 'auto' : '3px';
+    showToast(profile.notifWork ? '💪 Workout reminders on' : '🔕 Workout reminders off');
+  }
+  saveProfile();
+}
+function updateDarkToggle() {
+  const knob = document.getElementById('dark-knob');
+  const tog = document.getElementById('tog-dark');
+  if (!knob || !tog) return;
+  if (dark) { tog.style.background = '#1a2624'; knob.style.left = '23px'; }
+  else { tog.style.background = '#e0e0e0'; knob.style.left = '3px'; }
+}
+
+// ─── Share ────────────────────────────────────────────
+function shareApp() {
+  const url = location.origin + location.pathname;
+  const text = `💚 Check out Holistic Vitality — my wellness app for meditation, fitness & nutrition tracking!\n\n${url}`;
+  if (navigator.share) {
+    navigator.share({ title: 'Holistic Vitality', text, url }).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(url).then(() => showToast('🔗 Link copied to clipboard!'));
+  }
+}
+
+// ─── Clear data ───────────────────────────────────────
+function clearAllData() {
+  if (!confirm('Clear all your data? This cannot be undone.')) return;
+  localStorage.removeItem(MEALS_KEY);
+  localStorage.removeItem(WATER_KEY);
+  meals = []; totalCal = 0; water = 0;
+  renderMeals(); renderWater();
+  document.getElementById('water-n').textContent = 0;
+  applyProfile();
+  showToast('🗑️ All data cleared');
+}
+
 // ─── Data ─────────────────────────────────────────────
 let meals=[
   {name:'Avocado & Poached Egg Toast',cal:340,time:'🌅 Breakfast',e:'🥑'},
@@ -673,7 +1139,7 @@ function renderWater(){
     const b=document.createElement('button');
     b.style.cssText=`width:30px;height:30px;border-radius:9px;border:none;cursor:pointer;font-size:14px;background:${i<water?'#64b5f6':'#f0f5f2'};transition:transform .15s;`;
     b.textContent='💧';b.title=i<water?'Remove':'Add';
-    b.onclick=()=>{water=i<water?i:i+1;document.getElementById('water-n').textContent=water;renderWater();showToast(water>=8?'🎉 Goal reached!':'💧 '+water+'/8 glasses');};
+    b.onclick=()=>{water=i<water?i:i+1;document.getElementById('water-n').textContent=water;saveWater();renderWater();showToast(water>=8?'🎉 Goal reached!':'💧 '+water+'/8 glasses');};
     c.appendChild(b);
   }
 }
@@ -694,14 +1160,14 @@ function renderMeals(){
 }
 renderMeals();
 
-function delMeal(i){totalCal=Math.max(0,totalCal-(meals[i]?.cal||0));meals.splice(i,1);renderMeals();showToast('🗑️ Removed');}
+function delMeal(i){totalCal=Math.max(0,totalCal-(meals[i]?.cal||0));meals.splice(i,1);saveMeals();renderMeals();showToast('🗑️ Removed');}
 
 function addMeal(){
   const name=document.getElementById('n-name').value.trim();
   const cal=parseInt(document.getElementById('n-cal').value)||0;
   const time=document.getElementById('n-time').value;
   if(!name){showToast('⚠️ Enter a meal name');return;}
-  meals.push({name,cal,time,e:'🍽️'});totalCal+=cal;renderMeals();
+  meals.push({name,cal,time,e:'🍽️'});totalCal+=cal;saveMeals();renderMeals();
   document.getElementById('n-name').value='';document.getElementById('n-cal').value='';
   showToast('✅ '+name+' logged ('+cal+' kcal)');
 }
@@ -837,7 +1303,7 @@ function renderFoodCards(){
 function confirmMeals(){
   pending.forEach(f=>meals.push({name:f.n,cal:f.c,time:'☀️ Lunch',e:f.e}));
   totalCal+=pending.reduce((a,f)=>a+f.c,0);
-  renderMeals();
+  saveMeals();renderMeals();
   document.getElementById('food-cards').innerHTML='';
   document.getElementById('food-sum').style.display='none';
   document.getElementById('v-text').innerHTML='Meals logged! Tap mic to add more.<br/><span style="font-size:12px;">Hindi &amp; Indian foods supported 🇮🇳</span>';
@@ -855,81 +1321,106 @@ function demoVoice(){
   },110);
 }
 
-// ─── Service Worker + Notifications ──────────────────
-let deferredInstallPrompt = null;
+// ─── Install (PWA) ────────────────────────────────────
+// Store prompt in window scope so it's accessible anywhere
+window._installPrompt = null;
 
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
-  deferredInstallPrompt = e;
+  window._installPrompt = e;
   const banner = document.getElementById('install-banner');
-  if (banner) { banner.style.display = 'flex'; }
+  if (banner) banner.style.display = 'flex';
 });
 
-document.getElementById('install-btn')?.addEventListener('click', () => {
-  if (deferredInstallPrompt) {
-    deferredInstallPrompt.prompt();
-    deferredInstallPrompt.userChoice.then(() => {
-      document.getElementById('install-banner').style.display = 'none';
-    });
+window.addEventListener('appinstalled', () => {
+  const banner = document.getElementById('install-banner');
+  if (banner) banner.style.display = 'none';
+  showToast('🎉 App installed! Find it on your home screen.');
+});
+
+function installApp() {
+  if (!window._installPrompt) {
+    showToast('ℹ️ Open in Chrome browser to install');
+    return;
   }
-});
+  window._installPrompt.prompt();
+  window._installPrompt.userChoice.then(result => {
+    if (result.outcome === 'accepted') showToast('🎉 Installing app...');
+    window._installPrompt = null;
+    const banner = document.getElementById('install-banner');
+    if (banner) banner.style.display = 'none';
+  });
+}
 
+// ─── Service Worker ───────────────────────────────────
 async function registerSW() {
   if (!('serviceWorker' in navigator)) return;
   try {
-    const reg = await navigator.serviceWorker.register('/holistic-vitality/sw.js', { scope: '/holistic-vitality/' });
-    console.log('SW registered:', reg.scope);
-
-    // Register periodic sync if supported (Android Chrome)
+    // Try repo-prefixed path first (GitHub Pages), fall back to root
+    const swPath = location.pathname.includes('/holistic-vitality')
+      ? '/holistic-vitality/sw.js' : '/sw.js';
+    const scopePath = location.pathname.includes('/holistic-vitality')
+      ? '/holistic-vitality/' : '/';
+    const reg = await navigator.serviceWorker.register(swPath, { scope: scopePath });
     if ('periodicSync' in reg) {
-      try {
-        await reg.periodicSync.register('check-notifications', { minInterval: 60 * 60 * 1000 });
-      } catch (e) { /* not supported */ }
+      try { await reg.periodicSync.register('check-notifications',{minInterval:3600000}); } catch(e){}
     }
-
-    // Tell SW to schedule notifications
     if (Notification.permission === 'granted') {
-      reg.active?.postMessage({ type: 'SCHEDULE_NOTIFS' });
+      setTimeout(() => reg.active?.postMessage({ type: 'SCHEDULE_NOTIFS' }), 1000);
     }
-  } catch (e) {
-    console.log('SW registration failed:', e);
-  }
+  } catch (e) { console.log('SW:', e); }
 }
 
 async function requestNotifPermission() {
-  if (!('Notification' in window)) {
-    showToast('❌ Notifications not supported in this browser');
-    return;
-  }
+  if (!('Notification' in window)) { showToast('❌ Notifications not supported'); return; }
   const perm = await Notification.requestPermission();
   if (perm === 'granted') {
-    document.getElementById('notif-banner').style.display = 'none';
-    showToast('✅ Notifications enabled! You\'ll be reminded at 8 AM & 4:30 PM daily.');
-    const reg = await navigator.serviceWorker.ready;
-    reg.active?.postMessage({ type: 'SCHEDULE_NOTIFS' });
-    // Send a test notification immediately
-    setTimeout(() => reg.active?.postMessage({ type: 'TEST_NOTIF' }), 1500);
+    const nb = document.getElementById('notif-banner');
+    if (nb) nb.style.display = 'none';
+    showToast('✅ Notifications enabled! You\'ll get reminders at 8 AM & 4:30 PM.');
+    const reg = await navigator.serviceWorker.ready.catch(()=>null);
+    if (reg) {
+      reg.active?.postMessage({ type: 'SCHEDULE_NOTIFS' });
+      setTimeout(() => reg.active?.postMessage({ type: 'TEST_NOTIF' }), 1500);
+    }
   } else {
-    showToast('⚠️ Permission denied — enable notifications in browser settings');
+    showToast('⚠️ Tap "Enable 🔔" and allow when prompted');
   }
 }
 
-// Show notification banner if not yet granted
+// ─── Boot ─────────────────────────────────────────────
 window.addEventListener('load', async () => {
-  await registerSW();
+  // Load persisted data
+  loadProfile();
+  loadMeals();
+  loadWater();
 
-  // Show banner if notifications not yet decided
-  if ('Notification' in window && Notification.permission === 'default') {
-    setTimeout(() => {
-      const banner = document.getElementById('notif-banner');
-      if (banner) banner.style.display = 'flex';
-    }, 2000);
+  // Re-render with loaded data
+  document.getElementById('water-n').textContent = water;
+  renderWater();
+  renderMeals();
+
+  // Apply profile to UI
+  if (profile.setupDone) {
+    hideOnboarding();
+    applyProfile();
+  } else {
+    showOnboarding();
   }
 
-  // Handle ?page= deep links from notification tap
-  const params = new URLSearchParams(location.search);
-  const page = params.get('page');
-  if (page && ['dashboard','fitness','meditation','voice','nutrition'].includes(page)) {
+  // Show notification banner after 2s if permission not decided
+  if ('Notification' in window && Notification.permission === 'default') {
+    setTimeout(() => {
+      const nb = document.getElementById('notif-banner');
+      if (nb && profile.setupDone) nb.style.display = 'flex';
+    }, 2500);
+  }
+
+  await registerSW();
+
+  // Deep link from notification tap
+  const page = new URLSearchParams(location.search).get('page');
+  if (page && ['dashboard','fitness','meditation','voice','nutrition','profile'].includes(page)) {
     switchPage(page);
   }
 });
